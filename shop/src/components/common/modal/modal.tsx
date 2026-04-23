@@ -1,5 +1,7 @@
-import React, { FC, useRef, useEffect } from "react";
-import Portal from "@reach/portal";
+"use client";
+
+import React, { FC, useRef, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   disableBodyScroll,
@@ -68,9 +70,17 @@ const Modal: FC<ModalProps> = ({
     };
   }, [open]);
 
-  return (
-    <Portal>
-      <AnimatePresence>
+  // Replaced @reach/portal with React's createPortal. Guard document access
+  // so SSR / initial render without DOM is safe.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || typeof document === "undefined") return null;
+
+  return createPortal(
+    <AnimatePresence>
         {open && (
           <motion.div
             ref={modalRootRef}
@@ -123,8 +133,8 @@ const Modal: FC<ModalProps> = ({
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
-    </Portal>
+      </AnimatePresence>,
+    document.body
   );
 };
 

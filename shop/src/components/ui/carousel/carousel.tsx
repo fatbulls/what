@@ -1,14 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Swiper } from "swiper/react";
 import { useRouter } from "next/router";
-import SwiperCore, { Navigation, Pagination, Autoplay, Scrollbar } from "swiper";
+import { Navigation, Pagination, Autoplay, Scrollbar } from "swiper/modules";
+import type { Swiper as SwiperInstance } from "swiper";
 import { IoIosArrowBack } from "@react-icons/all-files/io/IoIosArrowBack";
 import { IoIosArrowForward } from "@react-icons/all-files/io/IoIosArrowForward";
-import { NavigationOptions } from "swiper/types/components/navigation";
-import "swiper/swiper-bundle.min.css";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
 import { getDirection } from "@utils/get-direction";
 
-SwiperCore.use([Navigation, Pagination, Autoplay, Scrollbar]);
+type NavigationOptions = any;
+type SwiperCore = SwiperInstance;
 
 type CarouselPropsType = {
 	className?: string;
@@ -67,6 +71,7 @@ const Carousel: React.FunctionComponent<CarouselPropsType> = ({
 			}`}
 		>
 			<Swiper
+				modules={[Navigation, Pagination, Autoplay, Scrollbar]}
 				loop={loop ?? true}
 				autoplay={autoplay}
 				breakpoints={breakpoints}

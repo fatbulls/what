@@ -1,55 +1,80 @@
-"use client";
-
-import Container from "@components/ui/container";
-import BlogBanner from "@components/blog/blog-banner";
-import BlogDetail from "@components/blog/blog-detail";
-import Spinner from "@components/ui/loaders/spinner/spinner";
-import { useParams } from "next/navigation";
-import { useQuery } from "react-query";
+import type { Metadata } from "next";
+import DynamicBlogPageClient from "./page-client";
 import { sdk } from "@lib/medusa";
-import { adaptBlogPost } from "@framework/utils/adapters";
 
-export default function DynamicBlogPage() {
-  const params = useParams();
-  const slug = (params?.slug as string) ?? "";
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
 
-  const { data, isLoading } = useQuery(
-    ["blog-post", slug],
-    async () => {
-      const res = await sdk.client.fetch<{ post: any }>(
-        `/store/blog-posts/${slug}`
-      );
-      return res.post ? adaptBlogPost(res.post) : null;
+async function loadPost(slug: string) {
+  try {
+    const res = await sdk.client.fetch<{ post: any }>(
+      `/store/blog-posts/${slug}`
+    );
+    return res.post ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await loadPost(slug);
+  if (!post) return { title: "Blog" };
+  const image = post.thumbnail;
+  return {
+    title: `${post.title} — What Shop Blog`,
+    description: post.excerpt ?? post.title,
+    alternates: { canonical: `/${slug}` },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt ?? undefined,
+      images: image ? [image] : undefined,
+      type: "article",
+      publishedTime: post.published_at ?? undefined,
+      modifiedTime: post.updated_at ?? undefined,
+      authors: post.author_name ? [post.author_name] : undefined,
     },
-    { enabled: !!slug, retry: false }
-  );
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      images: image ? [image] : undefined,
+    },
+  };
+}
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Spinner showText={false} />
-      </div>
-    );
+export default async function BlogDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+  const post = await loadPost(slug);
+  if (!post) {
+    return <DynamicBlogPageClient />;
   }
-
-  if (!data) {
-    return (
-      <Container className="py-20 text-center">
-        <h1 className="text-2xl font-semibold text-heading">Post not found</h1>
-        <p className="mt-2 text-body">
-          The article you are looking for may have been moved or removed.
-        </p>
-      </Container>
-    );
-  }
-
-  const featuredImage = (data as any)?.image?.original ?? (data as any)?.thumbnail;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    image: post.thumbnail,
+    datePublished: post.published_at,
+    dateModified: post.updated_at,
+    author: post.author_name
+      ? { "@type": "Person", name: post.author_name }
+      : undefined,
+  };
   return (
     <>
-      <BlogBanner title={(data as any)?.title} image={featuredImage} />
-      <Container>
-        <BlogDetail blogs={data as any} image={featuredImage} />
-      </Container>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <article className="sr-only" aria-hidden="false">
+        <h1>{post.title}</h1>
+        {post.excerpt ? <p>{post.excerpt}</p> : null}
+        {post.content ? (
+          <div>{String(post.content).slice(0, 2000)}</div>
+        ) : null}
+      </article>
+      <DynamicBlogPageClient />
     </>
   );
 }
