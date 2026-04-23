@@ -11,11 +11,6 @@ import ProductsFeatured from "@containers/products-featured";
 import BannerSliderBlock from "@containers/banner-slider-block";
 import Subscription from "@components/common/subscription";
 import NewArrivalsProductFeed from "@components/product/feeds/new-arrivals-product-feed";
-import HomeContent from "@components/home/homecontent";
-import HomeFaqs from "@components/home/homefaq";
-import CustomerReviews from "@components/home/customer";
-import BlogTopContent from "@components/home/blog-top-content";
-import PickBottomContent from "@components/home/designer-pick-bottom-content";
 import { ROUTES } from "@lib/routes";
 
 import {
@@ -59,6 +54,10 @@ const BannerSliderSkeleton = () => (
   </div>
 );
 
+// 1:1 mirror of becauseyou.com.my's production home layout
+// (`shop/src/pages/index.tsx`). The commented-out blocks below are
+// intentionally disabled in production — do not re-enable without
+// confirming against the live site.
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
 
@@ -71,19 +70,21 @@ export default function Home() {
       {isClient ? <BannerSliderBlock data={promotionBanner} /> : <BannerSliderSkeleton />}
       <Container>
         <CategoryBlock sectionHeading="text-occasions" variant="rounded" />
-        <HomeContent />
+        {/*<HomeContent/>*/}
         <ProductsFeatured sectionHeading="text-featured-products" />
+        {/*<BannerCard data={banner[0]} href={`${ROUTES.COLLECTIONS}/${banner[0].slug}`} className="mb-12 lg:mb-14 xl:mb-16 pb-0.5 lg:pb-1 xl:pb-0" />*/}
+        {/*<BannerCard data={banner[1]} href={`${ROUTES.COLLECTIONS}/${banner[1].slug}`} className="mb-12 lg:mb-14 xl:mb-16 pb-0.5 lg:pb-1 xl:pb-0" />*/}
         <BannerWithProducts
           sectionHeading="text-season-pick"
           categorySlug="/search"
           data={productBanner}
         />
-        <PickBottomContent />
+        {/*<PickBottomContent/>*/}
         <NewArrivalsProductFeed />
-        <BlogTopContent />
+        {/*<BlogTopContent/>*/}
         {isClient ? <BlogBanner /> : <BlogBannerSkeleton />}
-        <CustomerReviews />
-        <HomeFaqs />
+        {/*<CustomerReviews/>*/}
+        {/*<HomeFaqs/>*/}
         {isClient ? <Instagram /> : <InstagramSkeleton />}
         <Subscription className="bg-opacity-0 px-5 sm:px-16 xl:px-0 py-12 md:py-14 xl:py-16" />
       </Container>
