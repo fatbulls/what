@@ -1,13 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import React from "react";
 import ClientOnly from "@components/common/client-only";
 
-// ChawkBazar's SiteLayout + descendants (Search, Scrollbar, Swiper etc.)
-// assume a client-only environment (they read `window`/`document` at module
-// load). Loading SiteLayout with SSR disabled plus wrapping `children` in
-// `ClientOnly` sidesteps those crashes without touching any original JSX.
+// Client-only shell. Importing SiteLayout from a Server Component marks the
+// whole transitive chain as server-rendered, which fails because ChawkBazar
+// components use `next/router` and other client-only APIs. Isolating the
+// dynamic import inside a "use client" module keeps SSR off the ChawkBazar
+// tree while still allowing the root layout to stay a Server Component and
+// export `metadata` / SEO.
 const SiteLayout = dynamic(() => import("@components/layout/layout"), {
   ssr: false,
   loading: () => (
@@ -18,11 +19,7 @@ const SiteLayout = dynamic(() => import("@components/layout/layout"), {
   ),
 });
 
-export default function CountryLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Shell({ children }: { children: React.ReactNode }) {
   return (
     <SiteLayout>
       <ClientOnly>{children}</ClientOnly>

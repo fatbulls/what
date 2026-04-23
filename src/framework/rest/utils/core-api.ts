@@ -42,9 +42,13 @@ function wrap<T>(data: T): AxiosLike<T> {
 }
 
 async function currentRegionCountry(): Promise<string | undefined> {
-  if (typeof window === "undefined") return undefined;
-  const match = window.location.pathname.match(/^\/([a-z]{2})(\/|$)/);
-  return match?.[1];
+  // Single-region storefront — no URL prefix. Use the configured default
+  // country code so Medusa picks a valid region; fall back to `us` if unset.
+  return (
+    process.env.NEXT_PUBLIC_DEFAULT_REGION ??
+    process.env.DEFAULT_REGION ??
+    "us"
+  );
 }
 
 let _categoryCache: Record<string, string> | null = null;
@@ -67,15 +71,19 @@ async function resolveCategoryId(slug: string): Promise<string | undefined> {
 }
 
 async function resolveRegionId(countryCode?: string): Promise<string | undefined> {
-  if (!countryCode) return undefined;
   try {
     const { regions } = await sdk.client.fetch<{ regions: any[] }>(
       "/store/regions"
     );
-    const region = regions?.find((r) =>
-      r.countries?.some((c: any) => c.iso_2 === countryCode)
-    );
-    return region?.id;
+    // Match the requested countryCode first; fall back to the first region
+    // so products still render prices in single-region stores where the
+    // default country env var doesn't happen to belong to any region.
+    const byCountry = countryCode
+      ? regions?.find((r) =>
+          r.countries?.some((c: any) => c.iso_2 === countryCode)
+        )
+      : undefined;
+    return byCountry?.id ?? regions?.[0]?.id;
   } catch {
     return undefined;
   }

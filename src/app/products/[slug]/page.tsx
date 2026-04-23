@@ -3,7 +3,7 @@ import { sdk } from "@lib/medusa";
 import ProductPageClient from "./product-page-client";
 
 interface PageParams {
-  params: Promise<{ countryCode: string; slug: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 async function loadProduct(slug: string) {
