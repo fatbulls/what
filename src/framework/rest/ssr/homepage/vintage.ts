@@ -1,5 +1,5 @@
 import { GetStaticProps } from "next";
-import { QueryClient } from "react-query";
+import { QueryClient } from "@/shims/rq-compat";
 import { API_ENDPOINTS } from "@framework/utils/endpoints";
 import { fetchSettings } from "@framework/settings/settings.query";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -8,7 +8,7 @@ import { fetchBrands } from "@framework/brand/brands.query";
 import { fetchProducts } from "@framework/products/products.query";
 import { siteSettings } from "@settings/site.settings";
 import { fetchFeaturedCategories } from "@framework/category/featured-categories.query";
-import { dehydrate } from "react-query/hydration";
+import { dehydrate } from "@/shims/rq-compat";
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const queryClient = new QueryClient({

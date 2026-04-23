@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useQuery } from "react-query";
+import { useQuery } from "@/shims/rq-compat";
 import { Instagram, QueryParamsType } from "@framework/types";
 
 const INSTAGRAM_TOKEN =

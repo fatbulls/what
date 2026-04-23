@@ -11,7 +11,7 @@ import {
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   useQuery,
-} from "react-query";
+} from "@/shims/rq-compat";
 
 const ProductService = new CoreApi(API_ENDPOINTS.PRODUCTS);
 

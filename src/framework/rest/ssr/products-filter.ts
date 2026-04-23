@@ -5,8 +5,8 @@ import { fetchInfiniteProducts } from "@framework/products/products.query";
 import { API_ENDPOINTS } from "@framework/utils/endpoints";
 import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { QueryClient } from "react-query";
-import { dehydrate } from "react-query/hydration";
+import { QueryClient } from "@/shims/rq-compat";
+import { dehydrate } from "@/shims/rq-compat";
 import { fetchAttributes } from "@framework/attributes/attributes.query";
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {

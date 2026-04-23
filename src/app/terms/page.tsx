@@ -7,7 +7,7 @@ import { Link, Element } from "react-scroll";
 import { useTranslation } from "next-i18next";
 import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { QueryClient } from "react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { API_ENDPOINTS } from "@framework/utils/endpoints";
 import { fetchSettings } from "@framework/settings/settings.query";
 import { Seo } from "@components/seo";

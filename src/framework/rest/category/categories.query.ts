@@ -10,7 +10,7 @@ import {
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   useQuery,
-} from "react-query";
+} from "@/shims/rq-compat";
 import { mapPaginatorData } from "@framework/utils/data-mappers";
 
 const CategoryService = new CoreApi(API_ENDPOINTS.CATEGORIES);

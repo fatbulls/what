@@ -1,7 +1,7 @@
 import { Attribute } from "@framework/types";
 import { CoreApi } from "@framework/utils/core-api";
 import { API_ENDPOINTS } from "@framework/utils/endpoints";
-import { useQuery } from "react-query";
+import { useQuery } from "@/shims/rq-compat";
 
 const BlogService = new CoreApi(API_ENDPOINTS.BLOG);
 

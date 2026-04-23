@@ -5,7 +5,7 @@ import {
 } from "@framework/types";
 import { mapPaginatorData } from "@framework/utils/data-mappers";
 import { API_ENDPOINTS } from "@framework/utils/endpoints";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery } from "@/shims/rq-compat";
 import { OrderService } from "./order.service";
 import { messageCardAtom } from "@store/checkout";
 import { useAtom } from "jotai";

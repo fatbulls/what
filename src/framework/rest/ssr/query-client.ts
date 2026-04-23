@@ -1,4 +1,4 @@
-import { QueryClient } from "react-query";
+import { QueryClient } from "@/shims/rq-compat";
 
 const parseNumberEnv = (value: string | undefined, fallback: number) => {
   if (!value) {

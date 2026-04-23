@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@/shims/rq-compat";
 import { Category, QueryParamsType } from "@framework/types";
 import { API_ENDPOINTS } from "@framework/utils/endpoints";
 import request from "@framework/utils/request";

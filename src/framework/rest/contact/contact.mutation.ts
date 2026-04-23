@@ -1,4 +1,4 @@
-import { useMutation } from "react-query";
+import { useMutation } from "@/shims/rq-compat";
 import { toast } from "react-toastify";
 import { useTranslation } from "next-i18next";
 import { API_ENDPOINTS } from "@framework/utils/endpoints";
