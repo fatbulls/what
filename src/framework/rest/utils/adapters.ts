@@ -156,6 +156,36 @@ export function paginatorWrap<T>(
   };
 }
 
+export function adaptBlogPost(p: any): any {
+  // ChawkBazar blog components expect `{id, slug, title, description, image,
+  // content, created_at, updated_at}`. Map Medusa's blog_post shape.
+  const image = p?.thumbnail
+    ? { id: p.id, original: p.thumbnail, thumbnail: p.thumbnail }
+    : null;
+  return {
+    id: p?.id,
+    slug: p?.slug,
+    title: p?.title,
+    description: p?.excerpt ?? "",
+    excerpt: p?.excerpt ?? "",
+    content: p?.content ?? "",
+    image,
+    thumbnail: p?.thumbnail,
+    author: p?.author_name
+      ? { id: p.id, name: p.author_name }
+      : null,
+    tags: (p?.tags ?? []).map((t: string) => ({
+      id: t,
+      name: t,
+      slug: t,
+    })),
+    views: p?.views ?? 0,
+    published_at: p?.published_at,
+    created_at: p?.created_at,
+    updated_at: p?.updated_at,
+  };
+}
+
 export function adaptCustomer(c: HttpTypes.StoreCustomer | null): any {
   if (!c) return null;
   return {

@@ -8,6 +8,7 @@
 
 import { sdk } from "@lib/medusa";
 import {
+  adaptBlogPost,
   adaptCategory,
   adaptCustomer,
   adaptProduct,
@@ -202,6 +203,36 @@ async function fetchCategories(params: ParamsType) {
   return paginatorWrap(items, res.count ?? items.length, params.limit ?? 100, 1);
 }
 
+async function fetchBlogPosts(params: ParamsType) {
+  const limit = params.limit ?? 20;
+  const page = params.page ?? 1;
+  const offset = (page - 1) * limit;
+  try {
+    const res = await sdk.client.fetch<{
+      posts: any[];
+      count: number;
+    }>("/store/blog-posts", {
+      method: "GET",
+      query: { limit, offset, q: params.text },
+    });
+    const posts = (res.posts ?? []).map(adaptBlogPost);
+    return paginatorWrap(posts, res.count ?? posts.length, limit, page);
+  } catch {
+    return paginatorWrap([], 0, limit, page);
+  }
+}
+
+async function fetchBlogPost(slug: NumberOrString) {
+  try {
+    const res = await sdk.client.fetch<{ post: any }>(
+      `/store/blog-posts/${slug}`
+    );
+    return res.post ? adaptBlogPost(res.post) : null;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchMe() {
   try {
     const res = await sdk.client.fetch<{ customer: any }>(
@@ -292,6 +323,8 @@ export class CoreApi {
         return wrap(await fetchCategories(params));
       case "orders":
         return wrap(await fetchOrders(params));
+      case "posts":
+        return wrap(await fetchBlogPosts(params));
       case "users":
       case "me":
         return wrap(await fetchMe());
@@ -311,6 +344,8 @@ export class CoreApi {
     switch (this._base_path) {
       case "products":
         return wrap(await fetchProduct(id));
+      case "posts":
+        return wrap(await fetchBlogPost(id));
       case "me":
       case "users":
         return wrap(await fetchMe());
