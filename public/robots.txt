@@ -1,0 +1,17 @@
+User-agent: *
+Disallow: /classic
+Disallow: /forget-password
+Disallow: /my-account
+Disallow: /%5Btags%5D
+Disallow: /cdn-cgi
+Disallow: /fashion
+Disallow: /minimal
+Disallow: /standard
+Disallow: /trendy
+Disallow: /vintage
+Disallow: /elegant
+Disallow: /refined
+
+
+Allow: /wp-admin/admin-ajax.php
+Sitemap: https://becauseyou.com.my/sitemap.xml

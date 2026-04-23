@@ -1,0 +1,251 @@
+import Button from "@components/ui/button";
+import Input from "@components/ui/input";
+import Label from "@components/ui/label";
+import { RadioBox as Radio } from "@components/ui/radiobox";
+import TextArea from "@components/ui/text-area";
+import { useTranslation } from "next-i18next";
+import * as yup from "yup";
+import { AddressType } from "@framework/utils/constants";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import { useUI } from "@contexts/ui.context";
+import { useUpdateCustomerMutation } from "@framework/customer/customer.query";
+import SelectInput from "@components/ui/select-input";
+
+const stateList = [
+  { label: "W.P. Kuala Lumpur", value: "W.P. Kuala Lumpur" },
+  { label: "Selangor", value: "Selangor" },
+  { label: "Johor", value: "Johor" },
+  { label: "Kedah", value: "Kedah" },
+  { label: "Kelantan", value: "Kelantan" },
+  { label: "Melaka", value: "Melaka" },
+  { label: "Negeri Sembilan", value: "Negeri Sembilan" },
+  { label: "Pahang", value: "Pahang" },
+  { label: "Perak", value: "Perak" },
+  { label: "Perlis", value: "Perlis" },
+  { label: "Pulau Pinang", value: "Pulau Pinang" },
+  { label: "Sabah", value: "Sabah" },
+  { label: "Sarawak", value: "Sarawak" },
+  { label: "Terengganu", value: "Terengganu" },
+  { label: "W.P. Labuan", value: "W.P. Labuan" },
+  { label: "W.P. Putrajaya", value: "W.P. Putrajaya" },
+];
+
+type FormValues = {
+  __typename?: string;
+  title: string;
+  //phone_number: string;
+  type: AddressType;
+  address: {
+    phone_number: string;
+    country: string;
+    city: string;
+    state: string;
+    zip: string;
+    street_address: string;
+  };
+};
+
+const addressSchema = yup.object().shape({
+  type: yup
+    .string()
+    .oneOf([AddressType.Billing, AddressType.Shipping])
+    .required("error-type-required"),
+  title: yup.string().required("error-title-required"),
+  //phone_number: yup.string().required("error-phone-number-required"),
+  address: yup.object().shape({
+    phone_number: yup.string().required("error-phone-number-required"),
+    country: yup.string().required("error-country-required"),
+    city: yup.string().required("error-city-required"),
+    state: yup.string().required("error-state-required"),
+    zip: yup.string().required("error-zip-required"),
+    street_address: yup.string().required("error-street-required"),
+  }),
+});
+
+const AddressForm: React.FC<any> = ({ data }) => {
+  const { t } = useTranslation("common");
+  const { address, type, customerId } = data;
+  const { mutate: updateProfile } = useUpdateCustomerMutation();
+  const { closeModal } = useUI();
+  // if (address?.address) {
+  //   address.address.country = "Malaysia";
+  //   address.country = "Malaysia";
+  // }
+
+  function onSubmit(values: FormValues) {
+    const state = values.state.label;
+    const formattedInput = {
+      id: address?.id,
+      customer_id: customerId,
+      title: values.title,
+      //phone_number: values.phone_number,
+      type: values.type,
+      address: {
+        ...(address?.id && { id: address.id }),
+        ...values.address,
+        ...{ state },
+      },
+    };
+
+    updateProfile({
+      id: customerId,
+      address: [formattedInput],
+    });
+
+    closeModal();
+  }
+
+  const defaultValues = {
+    title: address?.title ?? "",
+    type: address?.type ?? type,
+    ...(address?.address && address),
+  };
+
+  if (!address?.address) {
+    defaultValues.address = {
+      address: {
+        country: "Malaysia",
+        state: "",
+      },
+      country: "Malaysia",
+    };
+  }
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: yupResolver(addressSchema),
+    shouldUnregister: true,
+    defaultValues: defaultValues,
+  });
+
+  const chosenType = watch("type");
+  setValue("address.state", "Malaysia");
+  if (address) {
+    setValue("state", {
+      label: address.address.state,
+      value: address.address.state,
+    });
+  }
+
+  return (
+    <div className="p-5 sm:p-8 md:rounded-xl min-h-screen md:min-h-0 bg-white">
+      <h1 className="text-heading font-semibold text-lg text-center mb-4 sm:mb-6">
+        {address ? t("text-update-address") : t("text-add-new-address")}
+      </h1>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="grid grid-cols-2 gap-5 h-full"
+      >
+        <div>
+          <Label>{t("text-type")}</Label>
+          <div className="space-x-4 rtl:space-x-reverse flex items-center">
+            <Radio
+              id="billing"
+              {...register("type")}
+              type="radio"
+              value={AddressType.Billing}
+              labelKey={t("text-billing")}
+            />
+            <Radio
+              id="shipping"
+              {...register("type")}
+              type="radio"
+              value={AddressType.Shipping}
+              labelKey={t("text-shipping")}
+            />
+          </div>
+        </div>
+
+        <Input
+          //labelKey={t("text-title")}
+          labelKey={chosenType ===  AddressType.Shipping ? 'Receiver Name': 'Billing Name'}
+          {...register("title")}
+          errorKey={t(errors.title?.message!)}
+          variant="outline"
+          className="col-span-2"
+          readOnly={address?.id === -1}
+        />
+
+        <Input
+          //labelKey={t("text-phone-number")}
+          labelKey={chosenType ===  AddressType.Shipping ? 'Receiver Number': t("text-phone-number")}
+          {...register("address.phone_number")}
+          errorKey={t(errors.address?.phone_number?.message!)}
+          variant="outline"
+          className="col-span-2"
+          readOnly={address?.id === -1}
+        />
+
+        <Input
+          labelKey={t("text-country")}
+          {...register("address.country")}
+          errorKey={t(errors.address?.country?.message!)}
+          variant="outline"
+          readOnly={true}
+        />
+
+        <Input
+          labelKey={t("text-city")}
+          {...register("address.city")}
+          errorKey={t(errors.address?.city?.message!)}
+          variant="outline"
+          readOnly={address?.id === -1}
+        />
+
+        {address?.id === -1 ? (
+          <Input
+            labelKey={t("text-state")}
+            {...register("address.state")}
+            errorKey={t(errors.address?.state?.message!)}
+            variant="outline"
+            readOnly={true}
+          />
+        ) : (
+          <div className="state-list">
+            <label className="block text-gray-600 font-semibold text-sm leading-none mb-3 cursor-pointer">
+              {t("text-state")}
+            </label>
+            <SelectInput
+              className="state-select"
+              name="state"
+              control={control}
+              options={stateList}
+              isMulti={false}
+            />
+          </div>
+        )}
+
+        <Input
+          labelKey={t("text-zip")}
+          {...register("address.zip")}
+          errorKey={t(errors.address?.zip?.message!)}
+          variant="outline"
+          readOnly={address?.id === -1}
+        />
+
+        <TextArea
+          //labelKey={t("text-street-address")}
+          labelKey={chosenType ===  AddressType.Shipping ? 'Receiver Address': 'Billing Address'}
+          {...register("address.street_address")}
+          errorKey={t(errors.address?.street_address?.message!)}
+          variant="outline"
+          className="col-span-2"
+          readOnly={address?.id === -1}
+        />
+
+        <Button className="w-full col-span-2">
+          {address ? t("text-update") : t("text-save")} {t("text-address")}
+        </Button>
+      </form>
+    </div>
+  );
+};
+
+export default AddressForm;
