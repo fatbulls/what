@@ -51,6 +51,30 @@ async function currentRegionCountry(): Promise<string | undefined> {
   );
 }
 
+let _tagCache: Record<string, string> | null = null;
+async function resolveTagId(value: string): Promise<string | null | undefined> {
+  if (!value) return undefined;
+  if (_tagCache && _tagCache[value] !== undefined) return _tagCache[value] || null;
+  try {
+    // Medusa /store endpoint doesn't expose tags; use /store/products?fields=tags
+    // aggregation across first 200 products. Works fine at our scale.
+    const { products } = await sdk.client.fetch<{ products: any[] }>(
+      "/store/products",
+      { query: { limit: 200, fields: "tags.id,tags.value" } }
+    );
+    const map: Record<string, string> = {};
+    for (const p of products ?? []) {
+      for (const t of p?.tags ?? []) {
+        if (t?.value && t?.id) map[t.value] = t.id;
+      }
+    }
+    _tagCache = map;
+    return map[value] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 let _categoryCache: Record<string, string> | null = null;
 async function resolveCategoryId(slug: string): Promise<string | undefined> {
   if (!slug) return undefined;
@@ -103,10 +127,18 @@ async function fetchProducts(params: ParamsType) {
   };
 
   if (params.text) query.q = params.text;
-  // ChawkBazar filters like `tags: "featured"` / `tags: "on-sale"` / `type`
-  // are string slugs that have no equivalent in Medusa's seed data. Skipping
-  // them returns the full product list instead of an empty set; sorting /
-  // ordering still applies so ProductsFeatured / NewArrivals differ.
+  // ChawkBazar passes marketing tag slugs like `featured-products`,
+  // `season-pick`, `designer-pick`. Translate to Medusa tag IDs — if the tag
+  // doesn't exist in Medusa, return an empty paginator so sections that
+  // expect zero results (e.g. ProductsFeatured when there's no `featured-
+  // products` tag) correctly collapse to nothing.
+  if (params.tags) {
+    const tagId = await resolveTagId(String(params.tags));
+    if (tagId === null) {
+      return paginatorWrap([], 0, limit, page);
+    }
+    if (tagId) query.tag_id = tagId;
+  }
   if (params.category) {
     // ChawkBazar passes the category SLUG (e.g. "shirts"). Medusa expects the
     // category ID (e.g. "pcat_01K..."). Resolve slug → id.
