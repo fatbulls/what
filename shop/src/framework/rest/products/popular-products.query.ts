@@ -1,5 +1,5 @@
 import { Product, QueryParamsType } from "@framework/types";
-import { useQuery } from "react-query";
+import { useQuery } from "@/shims/rq-compat";
 import { API_ENDPOINTS } from "@framework/utils/endpoints";
 import request from "@framework/utils/request";
 

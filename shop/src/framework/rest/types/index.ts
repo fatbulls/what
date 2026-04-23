@@ -1,4 +1,4 @@
-import { QueryKey } from "react-query";
+import { QueryKey } from "@/shims/rq-compat";
 
 export type CategoriesQueryOptionsType = {
   type?: string;

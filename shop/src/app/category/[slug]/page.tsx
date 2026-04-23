@@ -19,6 +19,8 @@ async function loadCategory(slug: string) {
   }
 }
 
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const category = await loadCategory(slug);

@@ -137,9 +137,6 @@ importers:
       react-phone-input-2:
         specifier: 2.14.0
         version: 2.14.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react-query:
-        specifier: 3.34.14
-        version: 3.34.14(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-rating-stars-component:
         specifier: 2.2.0
         version: 2.2.0
@@ -180,6 +177,12 @@ importers:
       '@tailwindcss/forms':
         specifier: 0.4.0
         version: 0.4.0(tailwindcss@3.4.19)
+      '@tanstack/react-query':
+        specifier: ^5
+        version: 5.100.1(react@18.3.1)
+      '@tanstack/react-query-devtools':
+        specifier: ^5.100.1
+        version: 5.100.1(@tanstack/react-query@5.100.1(react@18.3.1))(react@18.3.1)
       '@types/body-scroll-lock':
         specifier: 2.6.1
         version: 2.6.1
@@ -1163,6 +1166,23 @@ packages:
     resolution: {integrity: sha512-DeaQBx6EgEeuZPQACvC+mKneJsD8am1uiJugjgQK1+/Vt+Ai0GpFBC2T2fqnUad71WgOxyrZPE6BG1VaI6YqfQ==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
+
+  '@tanstack/query-core@5.100.1':
+    resolution: {integrity: sha512-awvQhOO/2TrSCHE5LKKsXcvvj6WSBncwEcMFCB/ez0Qs0b17iyyivoGArNV3HFfXryZwCpnb/olsaBBKrIbtSw==}
+
+  '@tanstack/query-devtools@5.100.1':
+    resolution: {integrity: sha512-jZLV2l7XjYxXCrXHj9pj15gZuY8Te+idoSPS2hIh3+SxOd20Gn0rfUoqEw9vc+us/b16hi0/DWqpzx9O1ZsyIQ==}
+
+  '@tanstack/react-query-devtools@5.100.1':
+    resolution: {integrity: sha512-JuLinBUl/BlZhm0WVX83fJgE2a3YSbuEdxf3fgP+THg92hX7YfwuH5DzT35a6sL/rifZsPr0yJ9itB6jDOcdRg==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.100.1
+      react: ^18 || ^19
+
+  '@tanstack/react-query@5.100.1':
+    resolution: {integrity: sha512-UgWRLhQKprC37SsO6y1zRabOqDmM2gsdTNPbqTT35yl7kOOhwXU4nyfOiGHXPwoEFJV1IpSk85hjIFjNFWVpzw==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@tanstack/react-virtual@3.13.24':
     resolution: {integrity: sha512-aIJvz5OSkhNIhZIpYivrxrPTKYsjW9Uzy+sP/mx0S3sev2HyvPb7xmjbYvokzEpfgYHy/HjzJ2zFAETuUfgCpg==}
@@ -5208,6 +5228,21 @@ snapshots:
       mini-svg-data-uri: 1.4.4
       tailwindcss: 3.4.19
 
+  '@tanstack/query-core@5.100.1': {}
+
+  '@tanstack/query-devtools@5.100.1': {}
+
+  '@tanstack/react-query-devtools@5.100.1(@tanstack/react-query@5.100.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@tanstack/query-devtools': 5.100.1
+      '@tanstack/react-query': 5.100.1(react@18.3.1)
+      react: 18.3.1
+
+  '@tanstack/react-query@5.100.1(react@18.3.1)':
+    dependencies:
+      '@tanstack/query-core': 5.100.1
+      react: 18.3.1
+
   '@tanstack/react-virtual@3.13.24(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/virtual-core': 3.14.0
@@ -5600,7 +5635,8 @@ snapshots:
 
   baseline-browser-mapping@2.10.21: {}
 
-  big-integer@1.6.52: {}
+  big-integer@1.6.52:
+    optional: true
 
   big.js@5.2.2: {}
 
@@ -5643,6 +5679,7 @@ snapshots:
       oblivious-set: 1.0.0
       rimraf: 3.0.2
       unload: 2.2.0
+    optional: true
 
   browserslist@4.28.2:
     dependencies:
@@ -5897,7 +5934,8 @@ snapshots:
 
   detect-libc@1.0.3: {}
 
-  detect-node@2.1.0: {}
+  detect-node@2.1.0:
+    optional: true
 
   didyoumean@1.2.2: {}
 
@@ -6496,7 +6534,8 @@ snapshots:
 
   js-cookie@2.2.1: {}
 
-  js-sha3@0.8.0: {}
+  js-sha3@0.8.0:
+    optional: true
 
   js-tokens@4.0.0: {}
 
@@ -6626,6 +6665,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.29.2
       remove-accents: 0.5.0
+    optional: true
 
   math-intrinsics@1.1.0: {}
 
@@ -6642,7 +6682,8 @@ snapshots:
       braces: 3.0.3
       picomatch: 2.3.2
 
-  microseconds@0.2.0: {}
+  microseconds@0.2.0:
+    optional: true
 
   mime-db@1.54.0: {}
 
@@ -6702,6 +6743,7 @@ snapshots:
   nano-time@1.0.0:
     dependencies:
       big-integer: 1.6.52
+    optional: true
 
   nanoclone@0.2.1: {}
 
@@ -6852,7 +6894,8 @@ snapshots:
       has-symbols: 1.1.0
       object-keys: 1.1.1
 
-  oblivious-set@1.0.0: {}
+  oblivious-set@1.0.0:
+    optional: true
 
   once@1.4.0:
     dependencies:
@@ -7478,6 +7521,7 @@ snapshots:
       react: 18.3.1
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
+    optional: true
 
   react-rating-stars-component@2.2.0: {}
 
@@ -7646,7 +7690,8 @@ snapshots:
     dependencies:
       jsesc: 3.1.0
 
-  remove-accents@0.5.0: {}
+  remove-accents@0.5.0:
+    optional: true
 
   require-directory@2.1.1: {}
 
@@ -8215,6 +8260,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.29.2
       detect-node: 2.1.0
+    optional: true
 
   upath@1.2.0: {}
 

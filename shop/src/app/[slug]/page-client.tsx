@@ -5,7 +5,7 @@ import BlogBanner from "@components/blog/blog-banner";
 import BlogDetail from "@components/blog/blog-detail";
 import Spinner from "@components/ui/loaders/spinner/spinner";
 import { useParams } from "next/navigation";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { sdk } from "@lib/medusa";
 import { adaptBlogPost } from "@framework/utils/adapters";
 

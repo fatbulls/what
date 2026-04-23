@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import SearchClient from "./page-client";
 import { sdk } from "@lib/medusa";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Shop — What Shop",
   description:

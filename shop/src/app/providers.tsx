@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { Hydrate } from "react-query/hydration";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HydrationBoundary } from "@tanstack/react-query";
 import { I18nextProvider } from "react-i18next";
 import { ManagedUIContext } from "@contexts/ui.context";
 import { SettingsProvider } from "@contexts/settings.context";
@@ -59,7 +59,7 @@ export default function Providers({
   return (
     <I18nextProvider i18n={i18n}>
       <QueryClientProvider client={queryClient}>
-        <Hydrate state={dehydratedState as any}>
+        <HydrationBoundary state={dehydratedState as any}>
           <SettingsProvider initialValue={undefined as any}>
             <ManagedUIContext>
               {children}
@@ -68,7 +68,7 @@ export default function Providers({
               <ManagedDrawer />
             </ManagedUIContext>
           </SettingsProvider>
-        </Hydrate>
+        </HydrationBoundary>
       </QueryClientProvider>
     </I18nextProvider>
   );

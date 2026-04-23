@@ -7,7 +7,7 @@ import PageHeader from "@components/ui/page-header";
 import { faq } from "@settings/faq.settings";
 import { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import {QueryClient} from "react-query";
+import {QueryClient} from "@tanstack/react-query";
 import {API_ENDPOINTS} from "@framework/utils/endpoints";
 import {fetchSettings} from "@framework/settings/settings.query";
 import { Seo } from "@components/seo";

@@ -4,8 +4,8 @@ import { fetchShop, fetchShops } from "@framework/shops/shops.query";
 import { API_ENDPOINTS } from "@framework/utils/endpoints";
 import { GetStaticPathsContext, GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { QueryClient } from "react-query";
-import { dehydrate } from "react-query/hydration";
+import { QueryClient } from "@/shims/rq-compat";
+import { dehydrate } from "@/shims/rq-compat";
 
 // This function gets called at build time
 export async function getStaticPaths({ locales }: GetStaticPathsContext) {

@@ -17,6 +17,8 @@ async function loadPost(slug: string) {
   }
 }
 
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await loadPost(slug);

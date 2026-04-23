@@ -7,7 +7,7 @@ import {
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   useQuery,
-} from "react-query";
+} from "@/shims/rq-compat";
 
 const TagService = new CoreApi(API_ENDPOINTS.TAGS);
 
