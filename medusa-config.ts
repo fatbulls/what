@@ -16,7 +16,10 @@ if (process.env.STRIPE_API_KEY) {
   })
 }
 
-const modules: any[] = []
+const modules: any[] = [
+  // Custom blog module (./src/modules/blog)
+  { resolve: "./src/modules/blog" },
+]
 if (paymentProviders.length > 0) {
   modules.push({
     resolve: "@medusajs/payment",
