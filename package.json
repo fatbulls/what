@@ -11,7 +11,7 @@
   "dependencies": {
     "@fontsource/open-sans": "4.3.0",
     "@fontsource/satisfy": "4.3.0",
-    "@headlessui/react": "1.2.0",
+    "@headlessui/react": "2.2.10",
     "@hookform/resolvers": "2.5.2",
     "@medusajs/js-sdk": "2.13.6",
     "@medusajs/types": "2.13.6",
@@ -26,7 +26,7 @@
     "classnames": "2.3.1",
     "cleave.js": "1.6.0",
     "dayjs": "1.10.5",
-    "framer-motion": "4.1.9",
+    "framer-motion": "11.18.2",
     "i18next": "22.5.1",
     "i18next-resources-to-backend": "^1.2.1",
     "jotai": "1.4.4",
@@ -38,8 +38,8 @@
     "next-i18next": "13.3.0",
     "next-pwa": "5.6.0",
     "next-seo": "4.26.0",
-    "overlayscrollbars": "1.13.1",
-    "overlayscrollbars-react": "0.2.2",
+    "overlayscrollbars": "2.15.1",
+    "overlayscrollbars-react": "0.5.6",
     "rc-collapse": "3.1.2",
     "rc-drawer": "4.3.1",
     "rc-pagination": "3.1.14",
@@ -63,7 +63,7 @@
     "react-use": "17.2.4",
     "server-only": "^0.0.1",
     "sharp": "0.29.2",
-    "swiper": "6.5.9",
+    "swiper": "11.2.10",
     "yup": "0.32.9"
   },
   "devDependencies": {

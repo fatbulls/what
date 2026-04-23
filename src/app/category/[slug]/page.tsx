@@ -1,84 +1,60 @@
-"use client";
+import type { Metadata } from "next";
+import CategoryClient from "./page-client";
+import { sdk } from "@lib/medusa";
 
-import Container from "@components/ui/container";
-import Subscription from "@components/common/subscription";
-import CategoryBanner from "@containers/category-banner";
-import { useRouter } from "next/router";
-import CategoryProductsGrid from "@components/category/category-products-grid";
-import Spinner from "@components/ui/loaders/spinner/spinner";
-import { Seo } from "@components/seo";
-import { stripHtml, ensureAbsoluteUrl } from "@utils/seo";
-import { useSettings } from "@contexts/settings.context";
-import { siteSettings } from "@settings/site.settings";
-import type { Category } from "@framework/types";
-
-
-const toTitleCase = (value?: string) => {
-  if (!value) return "Category";
-  return value.charAt(0).toUpperCase() + value.slice(1);
-};
-
-interface CategoryPageProps {
-  category: Category | null;
+interface PageProps {
+  params: Promise<{ slug: string }>;
 }
 
-export default function Category({ category }: CategoryPageProps) {
-  const router = useRouter();
-  const { query } = router;
-  const slug = query?.slug as string | undefined;
-  const settings = useSettings();
-
-  if (slug === undefined) {
-    return <Spinner />;
+async function loadCategory(slug: string) {
+  try {
+    const { product_categories } = await sdk.client.fetch<{
+      product_categories: any[];
+    }>("/store/product-categories", {
+      query: { handle: slug, limit: 1, fields: "*products" },
+    });
+    return product_categories?.[0] ?? null;
+  } catch {
+    return null;
   }
+}
 
-  if ((router as any)?.isFallback) {
-    return <Spinner />;
-  }
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const category = await loadCategory(slug);
+  if (!category) return { title: "Category" };
+  return {
+    title: `${category.name} — What Shop`,
+    description:
+      category.description ??
+      `Shop ${category.name} — curated selection delivered across the region.`,
+    alternates: { canonical: `/category/${slug}` },
+    openGraph: {
+      title: category.name,
+      description: category.description ?? undefined,
+      type: "website",
+    },
+  };
+}
 
-  const canonicalPath = slug ? `/category/${slug}` : "/category";
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    settings?.seo?.canonicalUrl ??
-    siteSettings?.author?.websiteUrl;
-  const bannerImage = category?.banner_image?.original;
-  const ogImage = ensureAbsoluteUrl(bannerImage, baseUrl);
-  const description = category?.details
-    ? stripHtml(category.details)
-    : `${toTitleCase(slug)} collection at BecauseYou Shop.`;
-
+export default async function CategoryPage({ params }: PageProps) {
+  const { slug } = await params;
+  const category = await loadCategory(slug);
+  const products = category?.products ?? [];
   return (
-    <div className="border-t-2 border-borderBottom">
-      <Seo
-        pageName={category?.name ?? toTitleCase(slug)}
-        title={category?.name}
-        description={description}
-        canonicalPath={canonicalPath}
-        ogImage={ogImage}
-        breadcrumbs={[
-          { name: "Home", item: "/" },
-          { name: "Categories", item: "/search" },
-          { name: category?.name ?? toTitleCase(slug), item: canonicalPath },
-        ]}
-        schema={{
-          type: "webPage",
-          data: {
-            title: category?.name,
-            description,
-          },
-        }}
-      />
-      <Container> 
-        <CategoryBanner className="my-4" category={category} />
-        <div className="pb-16 lg:pb-20">
-          <CategoryProductsGrid
-            classname="3xl:grid-cols-6"
-            categorySlug={query?.slug as string}
-          />
-        </div>
-        <Subscription />
-      </Container>
-    </div>
+    <>
+      <div className="sr-only" aria-hidden="false">
+        <h1>{category?.name ?? "Category"}</h1>
+        {category?.description ? <p>{category.description}</p> : null}
+        <ul>
+          {products.slice(0, 24).map((p: any) => (
+            <li key={p.id}>
+              <a href={`/products/${p.handle}`}>{p.title}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <CategoryClient />
+    </>
   );
 }
-
