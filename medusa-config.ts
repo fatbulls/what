@@ -22,6 +22,10 @@ const modules: any[] = [
   // Admin-editable runtime settings (GTM id, GA4 id, pixel ids, contact,
   // feature flags). Storefront reads public keys via /store/site-config.
   { resolve: "./src/modules/site-config" },
+  // Header + mobile navigation menu — admin-editable tree.
+  { resolve: "./src/modules/menu" },
+  // Slug-addressable static pages (privacy, terms, etc.).
+  { resolve: "./src/modules/page" },
 ]
 
 // Redis-backed infrastructure replaces the in-memory/local defaults so
