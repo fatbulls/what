@@ -1,5 +1,5 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { Bars3 } from "@medusajs/icons"
+import { BarsThree } from "@medusajs/icons"
 import {
   Container,
   Heading,
@@ -294,5 +294,5 @@ export default function MenusPage() {
 
 export const config = defineRouteConfig({
   label: "Menus",
-  icon: Bars3,
+  icon: BarsThree,
 })
