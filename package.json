@@ -26,7 +26,10 @@
     "@medusajs/cli": "2.13.6",
     "@medusajs/framework": "2.13.6",
     "@medusajs/medusa": "2.13.6",
-    "@medusajs/payment-stripe": "^2.14.0"
+    "@medusajs/payment-stripe": "^2.14.0",
+    "@sentry/node": "^10.50.0",
+    "@sentry/profiling-node": "^10.50.0",
+    "meilisearch": "^0.57.0"
   },
   "devDependencies": {
     "@medusajs/test-utils": "2.13.6",

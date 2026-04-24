@@ -24,3 +24,6 @@ build
 !.yarn/versions
 
 .medusa
+# Local env backups — never commit (real secrets); .env.example covers migration.
+.env.bak
+.env.local.bak
