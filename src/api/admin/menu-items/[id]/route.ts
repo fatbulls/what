@@ -1,6 +1,7 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { MENU_MODULE } from "../../../../modules/menu"
 import MenuModuleService from "../../../../modules/menu/service"
+import { revalidateStorefront } from "../../../../lib/revalidate-storefront"
 
 export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
   const svc: MenuModuleService = req.scope.resolve(MENU_MODULE)
@@ -14,7 +15,10 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
   if (body.is_active !== undefined) patch.is_active = Boolean(body.is_active)
   if (body.menu_key !== undefined) patch.menu_key = String(body.menu_key)
   const updated = await svc.updateMenuItems(patch)
-  res.json({ item: Array.isArray(updated) ? updated[0] : updated })
+  const item = Array.isArray(updated) ? updated[0] : updated
+  const menuKey = (item as any)?.menu_key ?? patch.menu_key ?? "header"
+  revalidateStorefront({ tags: [`menu:${menuKey}`] })
+  res.json({ item })
 }
 
 export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
@@ -30,5 +34,8 @@ export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
     for (const it of all) if ((it as any).parent_id === cur) stack.push(it.id)
   }
   await svc.deleteMenuItems(toDelete)
+  // Tag is per-menu_key but we don't know it for sure here without re-reading
+  // the deleted row; revalidate the only menu key we actually use today.
+  revalidateStorefront({ tags: ["menu:header"] })
   res.status(204).send()
 }

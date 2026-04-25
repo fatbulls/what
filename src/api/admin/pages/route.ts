@@ -1,6 +1,7 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { PAGE_MODULE } from "../../../modules/page"
 import PageModuleService from "../../../modules/page/service"
+import { revalidateStorefront } from "../../../lib/revalidate-storefront"
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/
 
@@ -39,5 +40,6 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
       is_published: body.is_published !== false,
     },
   ])
+  revalidateStorefront({ tags: [`page:${slug}`], paths: [`/${slug}`] })
   res.status(201).json({ page: created })
 }

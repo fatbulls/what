@@ -1,6 +1,7 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { MENU_MODULE } from "../../../modules/menu"
 import MenuModuleService from "../../../modules/menu/service"
+import { revalidateStorefront } from "../../../lib/revalidate-storefront"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const svc: MenuModuleService = req.scope.resolve(MENU_MODULE)
@@ -28,5 +29,6 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     return
   }
   const [created] = await svc.createMenuItems([payload])
+  revalidateStorefront({ tags: [`menu:${payload.menu_key}`] })
   res.status(201).json({ item: created })
 }

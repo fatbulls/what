@@ -1,6 +1,7 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { SITE_CONFIG_MODULE } from "../../../modules/site-config"
 import SiteConfigModuleService from "../../../modules/site-config/service"
+import { revalidateStorefront } from "../../../lib/revalidate-storefront"
 
 const VALID_KEY = /^[a-z0-9_.-]{1,64}$/i
 
@@ -46,5 +47,6 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
       results.push(created)
     }
   }
+  revalidateStorefront({ tags: ["site-config"] })
   res.status(200).json({ entries: results })
 }
