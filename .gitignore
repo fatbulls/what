@@ -27,3 +27,5 @@ build
 # Local env backups — never commit (real secrets); .env.example covers migration.
 .env.bak
 .env.local.bak
+# Runtime file uploads (local file provider) — never committed.
+/static/

@@ -36,14 +36,39 @@ const DEFAULT_ENTRIES: Array<Omit<Entry, "id">> = [
   { key: "hotjar_site_id", value: "", label: "Hotjar Site ID", description: "", group: "analytics", is_public: true },
 
   // --- Consent ---
-  { key: "consent_default_region", value: "MY", label: "Default consent region", description: "ISO-3166 code where analytics defaults to 'granted'. Set to an EEA code to make the banner opt-in everywhere.", group: "consent", is_public: true },
+  { key: "consent_default_region", value: "", label: "Default consent region", description: "ISO-3166 code where analytics defaults to 'granted'. Leave empty to default-deny everywhere; set to your primary market code (e.g. US, MY, SG) to opt users in there. EEA + UK + CH are always default-deny regardless.", group: "consent", is_public: true },
 
   // --- Site identity ---
-  { key: "site_name", value: "What Shop", label: "Site name", description: "Used in page titles and metadata", group: "identity", is_public: true },
-  { key: "site_tagline", value: "Flower Delivery, Hand Bouquets & Curated Gifts with Same-Day Delivery", label: "Tagline", description: "", group: "identity", is_public: true },
+  { key: "site_name", value: "Storefront", label: "Site name", description: "Used in page titles, OG tags, and structured data", group: "identity", is_public: true },
+  { key: "site_tagline", value: "Curated products with reliable delivery.", label: "Tagline", description: "Short one-line site description. Used as the default meta description and OG subtitle.", group: "identity", is_public: true },
+  { key: "site_logo_url", value: "", label: "Logo URL", description: "Public URL of the storefront header logo. Recommended: SVG or PNG with transparent background, ~3:1 aspect ratio (e.g. 288×96), max 100 KB. Use the Upload button to push to S3/local storage and paste the returned URL.", group: "identity", is_public: true },
+  { key: "site_logo_width", value: "144", label: "Logo width (px)", description: "Rendered width in the header. Default 144. Adjust to keep the header height stable.", group: "identity", is_public: true },
+  { key: "site_logo_height", value: "40", label: "Logo height (px)", description: "Rendered height in the header. Default 40.", group: "identity", is_public: true },
   { key: "contact_email", value: "", label: "Contact email", description: "", group: "identity", is_public: true },
   { key: "contact_phone", value: "", label: "Contact phone", description: "", group: "identity", is_public: true },
-  { key: "contact_address", value: "", label: "Contact address", description: "", group: "identity", is_public: true },
+  { key: "contact_address", value: "", label: "Contact address", description: "Single-line postal address — used as the LocalBusiness JSON-LD address fallback when business_address_* keys are empty.", group: "identity", is_public: true },
+
+  // --- SEO / business positioning ---
+  // These drive LocalBusiness JSON-LD, OG locale, and the dynamic OG image
+  // template. Leave any blank to fall back to a neutral default.
+  { key: "business_type", value: "LocalBusiness", label: "Business Schema.org type", description: "JSON-LD @type. Pick the most specific subtype that matches: LocalBusiness, Store, Restaurant, Florist, ClothingStore, ElectronicsStore, FurnitureStore, BookStore, GroceryStore, JewelryStore, HealthAndBeautyBusiness, HomeAndConstructionBusiness, AutoDealer.", group: "seo", is_public: true },
+  { key: "business_country", value: "", label: "Country code", description: "ISO 3166-1 alpha-2 (e.g. US, MY, SG, GB). Used for LocalBusiness addressCountry. Leave empty to omit.", group: "seo", is_public: true },
+  { key: "business_locale", value: "en_US", label: "Open Graph locale", description: "Format: lang_REGION (e.g. en_US, en_MY, zh_CN, ms_MY). Emitted as og:locale.", group: "seo", is_public: true },
+  { key: "business_html_lang", value: "en", label: "HTML lang attribute", description: "Two-letter or BCP-47 lang code on <html lang=\"...\"> (e.g. en, zh, ms, en-US).", group: "seo", is_public: true },
+  { key: "business_price_range", value: "$$", label: "Price range indicator", description: "Free text shown in LocalBusiness priceRange. Examples: $, $$, $$$, USD 50-200, MYR 80-500.", group: "seo", is_public: true },
+  { key: "business_area_served", value: "", label: "Areas served", description: "Comma-separated list of cities or regions served (e.g. \"Kuala Lumpur, Petaling Jaya, Selangor\"). Empty to omit from schema.", group: "seo", is_public: true },
+  { key: "business_address_street", value: "", label: "Business street address", description: "Optional override for SEO. Falls back to pickup_street, then contact_address.", group: "seo", is_public: true },
+  { key: "business_address_city", value: "", label: "Business city", description: "Optional override for SEO. Falls back to pickup_city.", group: "seo", is_public: true },
+  { key: "business_address_region", value: "", label: "Business state/region", description: "Optional override for SEO. Falls back to pickup_state.", group: "seo", is_public: true },
+  { key: "business_address_postal_code", value: "", label: "Business postal code", description: "Optional override for SEO. Falls back to pickup_zip.", group: "seo", is_public: true },
+
+  // --- OG image ---
+  { key: "og_image_url", value: "", label: "OG image URL (override)", description: "Optional absolute URL to a static social-share image (1200×630 recommended). If set, takes precedence over the dynamic /opengraph-image route.", group: "seo", is_public: true },
+  { key: "og_brand_color", value: "#000000", label: "OG accent colour", description: "Hex used for accent text on the dynamic OG image (e.g. #ff0066).", group: "seo", is_public: true },
+  { key: "og_bg_color_from", value: "#fafafa", label: "OG background gradient (start)", description: "Hex.", group: "seo", is_public: true },
+  { key: "og_bg_color_to", value: "#e5e5e5", label: "OG background gradient (end)", description: "Hex.", group: "seo", is_public: true },
+  { key: "og_subtitle", value: "", label: "OG image subtitle", description: "Line shown under the brand name on the dynamic OG image. Empty → falls back to site_tagline.", group: "seo", is_public: true },
+  { key: "og_footer_text", value: "", label: "OG image footer text", description: "Optional bottom line on the dynamic OG image (e.g. \"Same-day delivery\"). Empty → omitted.", group: "seo", is_public: true },
 
   // --- Social ---
   { key: "social_facebook", value: "", label: "Facebook URL", description: "", group: "social", is_public: true },
@@ -63,6 +88,20 @@ const DEFAULT_ENTRIES: Array<Omit<Entry, "id">> = [
   // --- Checkout (trust) ---
   { key: "ssm_number", value: "", label: "SSM registration number", description: 'Shown in the checkout trust footer (e.g. "1234567-X")', group: "checkout", is_public: true },
   { key: "checkout_delivery_pill", value: "Same-day delivery by 6 PM", label: "Delivery promise pill", description: "Short copy shown near Place Order", group: "checkout", is_public: true },
+
+  // --- File storage (S3 / S3-compatible) ---
+  // is_public: false on every secret so they DON'T leak via /store/site-config.
+  // medusa-config.ts reads these synchronously via psql at boot. Changes
+  // require a Medusa restart — use the "Restart server" button below the
+  // section, or run `pm2 restart medusa-api` on the host.
+  { key: "s3_enabled", value: "", label: "Enable S3 file uploads", description: 'Set to "1" to switch the file provider from local disk to S3. Requires Medusa restart.', group: "storage", is_public: false },
+  { key: "s3_endpoint", value: "", label: "S3 endpoint URL (optional)", description: "Leave empty for AWS S3. Set for S3-compatible services: Cloudflare R2 (https://<account>.r2.cloudflarestorage.com), MinIO, DigitalOcean Spaces, Backblaze B2, etc.", group: "storage", is_public: false },
+  { key: "s3_region", value: "", label: "Region", description: "AWS region code, e.g. us-east-1, ap-southeast-1, auto (for R2).", group: "storage", is_public: false },
+  { key: "s3_bucket", value: "", label: "Bucket name", description: "", group: "storage", is_public: false },
+  { key: "s3_access_key_id", value: "", label: "Access key ID", description: "AWS Access Key ID or equivalent for the S3-compatible service.", group: "storage", is_public: false },
+  { key: "s3_secret_access_key", value: "", label: "Secret access key", description: "Stored as plain text in the database — protect DB access. Treated as write-only in the admin UI.", group: "storage", is_public: false },
+  { key: "s3_file_url", value: "", label: "Public URL prefix", description: 'Public URL where uploaded files are served, e.g. "https://cdn.example.com" or "https://<bucket>.s3.<region>.amazonaws.com". Used to build asset URLs the storefront and Stripe receipts link to.', group: "storage", is_public: false },
+  { key: "s3_prefix", value: "", label: "Key prefix (optional)", description: 'Folder under the bucket where files are stored, e.g. "uploads/" or "media/". Trailing slash recommended.', group: "storage", is_public: false },
 ]
 
 export default function SiteConfigPage() {
@@ -163,6 +202,26 @@ export default function SiteConfigPage() {
           </Text>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={async () => {
+              if (!confirm("Restart Medusa now? Active admin sessions stay signed in. ~5s downtime.")) return
+              try {
+                await fetch("/admin/restart-server", {
+                  method: "POST",
+                  credentials: "include",
+                })
+                toast.success("Server restarting — reloading admin in 6s…")
+                setTimeout(() => window.location.reload(), 6000)
+              } catch (e: any) {
+                toast.error("Restart failed: " + (e?.message ?? e))
+              }
+            }}
+            disabled={saving}
+          >
+            Restart server
+          </Button>
           <Button variant="secondary" size="small" onClick={reload} disabled={loading || saving}>
             Reload
           </Button>
@@ -219,6 +278,12 @@ export default function SiteConfigPage() {
                       />
                     ) : (
                       <Input
+                        type={
+                          /(^|_)secret($|_)/.test(e.key) ||
+                          e.key.endsWith("_access_key")
+                            ? "password"
+                            : undefined
+                        }
                         value={typeof current === "string" ? current : ""}
                         onChange={(ev) => markDirty(e.key, { value: ev.target.value })}
                         placeholder={isMissing ? "(not set)" : undefined}
