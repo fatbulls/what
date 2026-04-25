@@ -199,59 +199,57 @@ export default function BlogPostsPage() {
         </div>
       ) : null}
 
-      <div className="p-6">
+      <div className="px-6 py-4">
         {loading ? (
-          <Text>Loading…</Text>
+          <Text size="small" className="text-ui-fg-subtle">Loading…</Text>
         ) : posts.length === 0 ? (
-          <Text>No blog posts yet. Click "New Post" to create one.</Text>
+          <Text size="small" className="text-ui-fg-subtle">
+            No blog posts yet. Click "New Post" to create one.
+          </Text>
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="border-b text-left text-sm text-ui-fg-muted">
-                <th className="py-2">Title</th>
-                <th className="py-2">Slug</th>
-                <th className="py-2">Status</th>
-                <th className="py-2">Views</th>
-                <th className="py-2">Updated</th>
-                <th className="py-2"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {posts.map((p) => (
-                <tr key={p.id} className="border-b">
-                  <td className="py-3 font-medium">{p.title}</td>
-                  <td className="py-3 text-ui-fg-muted">/{p.slug}</td>
-                  <td className="py-3">
+          <div className="space-y-2">
+            {posts.map((p) => (
+              <div
+                key={p.id}
+                className="flex items-center gap-3 border border-ui-border-base rounded-md p-3"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium text-ui-fg-base truncate">
+                    {p.title}
+                  </div>
+                  <div className="text-xs text-ui-fg-subtle mt-0.5 flex items-center gap-2 flex-wrap">
+                    <span className="truncate">/{p.slug}</span>
+                    <span>·</span>
                     {p.is_published ? (
-                      <Badge color="green">Published</Badge>
+                      <Badge size="2xsmall" color="green">Published</Badge>
                     ) : (
-                      <Badge color="grey">Draft</Badge>
+                      <Badge size="2xsmall" color="grey">Draft</Badge>
                     )}
-                  </td>
-                  <td className="py-3">{p.views}</td>
-                  <td className="py-3 text-ui-fg-muted">
-                    {new Date(p.updated_at).toLocaleDateString()}
-                  </td>
-                  <td className="py-3 space-x-2">
-                    <Button
-                      size="small"
-                      variant="secondary"
-                      onClick={() => setEditing({ ...p, tags: p.tags ?? [] })}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="danger"
-                      onClick={() => remove(p.id)}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    <span>·</span>
+                    <span>{p.views} views</span>
+                    <span>·</span>
+                    <span>{new Date(p.updated_at).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <Button
+                    size="small"
+                    variant="secondary"
+                    onClick={() => setEditing({ ...p, tags: p.tags ?? [] })}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="danger"
+                    onClick={() => remove(p.id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </Container>
