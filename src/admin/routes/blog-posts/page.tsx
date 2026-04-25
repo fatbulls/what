@@ -1,6 +1,7 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { DocumentText } from "@medusajs/icons"
 import { Container, Heading, Button, Input, Textarea, Text, Badge, Checkbox, Label, toast } from "@medusajs/ui"
+import RichTextEditor from "../../components/rich-text-editor"
 import { useEffect, useState } from "react"
 
 type BlogPost = {
@@ -166,16 +167,14 @@ export default function BlogPostsPage() {
             }
           />
 
-          <Label>Content (Markdown)</Label>
-          <Textarea
-            rows={12}
-            placeholder="# Heading
-
-Body text supports **markdown**."
+          <Label>Content</Label>
+          <RichTextEditor
             value={editing.content ?? ""}
-            onChange={(e) =>
-              setEditing((p) => ({ ...(p || {}), content: e.target.value }))
+            onChange={(html) =>
+              setEditing((p) => ({ ...(p || {}), content: html }))
             }
+            placeholder="Write the post body — heading, paragraphs, lists, links…"
+            minRows={14}
           />
 
           <div className="flex items-center gap-2">

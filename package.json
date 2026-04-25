@@ -29,6 +29,11 @@
     "@medusajs/payment-stripe": "^2.14.0",
     "@sentry/node": "^10.50.0",
     "@sentry/profiling-node": "^10.50.0",
+    "@tiptap/extension-link": "^3.22.4",
+    "@tiptap/extension-placeholder": "^3.22.4",
+    "@tiptap/pm": "^3.22.4",
+    "@tiptap/react": "^3.22.4",
+    "@tiptap/starter-kit": "^3.22.4",
     "meilisearch": "^0.57.0"
   },
   "devDependencies": {

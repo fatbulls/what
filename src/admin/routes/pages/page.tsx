@@ -5,13 +5,13 @@ import {
   Heading,
   Button,
   Input,
-  Textarea,
   Label,
   Text,
   Switch,
   toast,
 } from "@medusajs/ui"
 import { useEffect, useState } from "react"
+import RichTextEditor from "../../components/rich-text-editor"
 
 type Page = {
   id: string
@@ -141,15 +141,15 @@ export default function PagesRoute() {
             />
           </div>
           <div>
-            <Label size="small" weight="plus">Content (HTML)</Label>
-            <Textarea
+            <Label size="small" weight="plus">Content</Label>
+            <RichTextEditor
               value={editing.content ?? ""}
-              onChange={(e) => setEditing({ ...editing, content: e.target.value })}
-              rows={18}
-              placeholder="<h2>Section</h2><p>Paragraph…</p>"
+              onChange={(html) => setEditing({ ...editing, content: html })}
+              placeholder="Start writing the page content…"
+              minRows={16}
             />
             <Text size="xsmall" className="text-ui-fg-subtle mt-1">
-              Plain HTML is fine. Use semantic tags (h2, p, ul, li).
+              Use the toolbar for headings, lists, links, and quotes. Output is stored as semantic HTML.
             </Text>
           </div>
           <div className="flex items-center gap-2">
