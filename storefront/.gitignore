@@ -1,0 +1,17 @@
+node_modules/
+.next/
+out/
+.env
+.env.local
+.env.*.local
+.DS_Store
+*.log
+/test-results/
+/playwright-report/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local env backups — never commit (real secrets); .env.template covers migration.
+.env.local
+.env.local.bak
+.env.bak
