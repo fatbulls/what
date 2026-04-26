@@ -12,7 +12,17 @@ import {
   Switch,
   toast,
 } from "@medusajs/ui"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+
+// Keys that should render an Upload button next to the URL input
+// (image-bearing fields). Their value is still a URL — the upload
+// just routes the chosen file through /admin/uploads (which respects
+// the active file provider, S3 or local) and inserts the returned
+// public URL.
+const IMAGE_URL_KEYS = new Set([
+  "site_logo_url",
+  "og_image_url",
+])
 
 type Entry = {
   id: string
@@ -117,6 +127,38 @@ export default function SiteConfigPage() {
   const [loading, setLoading] = useState(true)
   const [dirty, setDirty] = useState<Record<string, Partial<Entry>>>({})
   const [saving, setSaving] = useState(false)
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null)
+  // One file input per image key — refs created lazily so we don't
+  // mount inputs we never use.
+  const fileRefs = useRef<Record<string, HTMLInputElement | null>>({})
+
+  async function uploadImage(key: string, file: File) {
+    setUploadingKey(key)
+    try {
+      const fd = new FormData()
+      fd.append("files", file)
+      const res = await fetch("/admin/uploads", {
+        method: "POST",
+        credentials: "include",
+        body: fd,
+      })
+      if (!res.ok) {
+        const txt = await res.text()
+        throw new Error(`upload failed (${res.status}): ${txt.slice(0, 200)}`)
+      }
+      const json = await res.json()
+      const url = json?.files?.[0]?.url
+      if (!url) throw new Error("upload returned no URL")
+      // Stage the new value in the dirty buffer so user still has to
+      // click Save (consistent with other edits on this page).
+      markDirty(key, { value: url })
+      toast.success("Uploaded — click Save to apply")
+    } catch (e: any) {
+      toast.error(e.message || "Upload failed")
+    } finally {
+      setUploadingKey(null)
+    }
+  }
 
   async function reload() {
     setLoading(true)
@@ -278,7 +320,47 @@ export default function SiteConfigPage() {
                     {e.description && (
                       <Text size="xsmall" className="text-ui-fg-subtle">{e.description}</Text>
                     )}
-                    {(e.description && e.description.length > 60) || (typeof current === "string" && current.length > 60) ? (
+                    {IMAGE_URL_KEYS.has(e.key) ? (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            value={typeof current === "string" ? current : ""}
+                            onChange={(ev) => markDirty(e.key, { value: ev.target.value })}
+                            placeholder="https://… or click Upload"
+                          />
+                          <input
+                            ref={(el) => {
+                              fileRefs.current[e.key] = el
+                            }}
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={(ev) => {
+                              const f = ev.target.files?.[0]
+                              if (f) uploadImage(e.key, f)
+                              if (fileRefs.current[e.key]) {
+                                fileRefs.current[e.key]!.value = ""
+                              }
+                            }}
+                          />
+                          <Button
+                            size="small"
+                            variant="secondary"
+                            disabled={uploadingKey === e.key}
+                            onClick={() => fileRefs.current[e.key]?.click()}
+                          >
+                            {uploadingKey === e.key ? "Uploading…" : "Upload"}
+                          </Button>
+                        </div>
+                        {typeof current === "string" && current ? (
+                          <img
+                            src={current}
+                            alt=""
+                            className="max-h-24 rounded border border-ui-border-base object-contain bg-ui-bg-subtle self-start"
+                          />
+                        ) : null}
+                      </div>
+                    ) : (e.description && e.description.length > 60) || (typeof current === "string" && current.length > 60) ? (
                       <Textarea
                         value={typeof current === "string" ? current : ""}
                         onChange={(ev) => markDirty(e.key, { value: ev.target.value })}
