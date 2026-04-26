@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import FAQShippingClient from "./faq-shipping-client";
-import { faq_shipping_delivery } from "@settings/faq.settings";
+import { loadFaqs } from "@lib/site-faq";
 import { buildFaqJsonLd } from "@lib/faq-jsonld";
 
 const description =
@@ -18,8 +18,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function FAQShippingPage() {
-  const jsonLd = buildFaqJsonLd(faq_shipping_delivery);
+export const revalidate = 60;
+
+export default async function FAQShippingPage() {
+  const items = await loadFaqs("shipping");
+  const jsonLd = buildFaqJsonLd(items);
   return (
     <>
       {jsonLd ? (
@@ -28,7 +31,7 @@ export default function FAQShippingPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       ) : null}
-      <FAQShippingClient />
+      <FAQShippingClient items={items} />
     </>
   );
 }

@@ -21,21 +21,26 @@ interface Props {
   data: {
     widgetTitle?: string;
     lists: {
-      id: string;
+      id: string | number;
       path?: string;
       title: string;
       icon?: any;
     }[];
   };
+  // True when widgetTitle / list[].title are plain admin-edited strings
+  // (from /admin/footer-menu). False/undefined for the legacy data.tsx
+  // i18n-key shape — falls back to t().
+  liveLabels?: boolean;
 }
 
-const WidgetLink: FC<Props> = ({ className, data }) => {
+const WidgetLink: FC<Props> = ({ className, data, liveLabels }) => {
   const { widgetTitle, lists } = data;
   const { t } = useTranslation("footer");
   const settings = useSettings();
   const whatsappUrl = (settings as any)?.whatsappUrl as string | undefined;
   const [isAuthorized] = useAtom(authorizationAtom);
   const { setModalView, openModal } = useUI();
+  const xlate = (s?: string) => (s ? (liveLabels ? s : t(s)) : "");
 
   function openLogin() {
     setModalView("LOGIN_VIEW");
@@ -49,13 +54,13 @@ const WidgetLink: FC<Props> = ({ className, data }) => {
   return (
     <div className={`${className}`}>
       <h4 className="text-heading text-sm md:text-base xl:text-lg font-semibold mb-5 2xl:mb-6 3xl:mb-7">
-        {t(`${widgetTitle}`)}
+        {xlate(widgetTitle)}
       </h4>
       <ul className="text-xs md:text-[13px] lg:text-sm text-body flex flex-col space-y-3 lg:space-y-3.5">
         {lists.map((list) => {
           const linkClass =
             "transition-colors duration-200 hover:text-black";
-          const label = t(`${list.title}`);
+          const label = xlate(list.title);
           const iconNode = list.icon ? (
             <span className="ltr:mr-3 rtl:ml-3 relative top-0.5 lg:top-1 text-sm lg:text-base">
               {list.icon}

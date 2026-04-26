@@ -119,6 +119,9 @@ const modules: any[] = [
   { resolve: "./src/modules/page" },
   // Home-page hero banners — admin-uploaded image + link.
   { resolve: "./src/modules/banner" },
+  // FAQ accordion entries — slot-grouped Q&A (main, shipping, returns).
+  // Replaces the static i18n-driven faq.settings.ts.
+  { resolve: "./src/modules/faq" },
   // File storage. Provider chosen at boot from site_config.s3_enabled —
   // see loadStorageConfigFromDb above. Admin can switch via the
   // Site Settings → Storage section + the "Restart server" button.

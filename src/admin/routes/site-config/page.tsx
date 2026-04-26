@@ -89,6 +89,14 @@ const DEFAULT_ENTRIES: Array<Omit<Entry, "id">> = [
   { key: "ssm_number", value: "", label: "SSM registration number", description: 'Shown in the checkout trust footer (e.g. "1234567-X")', group: "checkout", is_public: true },
   { key: "checkout_delivery_pill", value: "Same-day delivery by 6 PM", label: "Delivery promise pill", description: "Short copy shown near Place Order", group: "checkout", is_public: true },
 
+  // --- Footer copyright ---
+  // Storefront's <Copyright> renders the template after replacing:
+  //   {year}      → current year
+  //   {site_name} → site_name
+  //   {ssm}       → ssm_number (empty if unset)
+  { key: "copyright_text", value: "© {year} {site_name} {ssm}. All rights reserved.", label: "Copyright text", description: 'Tokens: {year}, {site_name}, {ssm}. Example: "© {year} {site_name} (1486630-H). All rights reserved."', group: "footer", is_public: true },
+  { key: "copyright_show_payments", value: "1", label: "Show payment icons", description: 'Set to "1" to show the payment-method strip in the footer copyright row.', group: "footer", is_public: true },
+
   // --- File storage (S3 / S3-compatible) ---
   // is_public: false on every secret so they DON'T leak via /store/site-config.
   // medusa-config.ts reads these synchronously via psql at boot. Changes

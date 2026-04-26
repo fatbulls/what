@@ -1,11 +1,14 @@
 "use client";
 
 import Container from "@components/ui/container";
-import { siteSettings } from "@settings/site.settings";
 import { useTranslation } from "next-i18next";
 import { Image } from "@components/ui/image";
 
 interface CopyrightProps {
+  // Pre-rendered copyright string from the server — token-replaced
+  // template `copyright_text` in site-config. Empty falls back to a
+  // sane default so the strip never collapses.
+  text?: string;
   payment?: {
     id: string | number;
     path?: string;
@@ -15,21 +18,15 @@ interface CopyrightProps {
     height: number;
   }[];
 }
-const year = new Date().getFullYear();
-const Copyright: React.FC<CopyrightProps> = ({ payment }) => {
+const Copyright: React.FC<CopyrightProps> = ({ text, payment }) => {
   const { t } = useTranslation("footer");
+  const displayed =
+    text && text.trim() ? text : `© ${new Date().getFullYear()}`;
   return (
     <div className="border-t border-gray-300 pt-5 pb-16 sm:pb-20 md:pb-5 mb-2 sm:mb-0">
       <Container className="flex flex-col-reverse md:flex-row text-center md:justify-between">
         <p className="text-body text-xs md:text-[13px] lg:text-sm leading-6">
-          {t("text-copyright")} &copy;{2024} &nbsp;
-          <a
-            className="font-semibold text-gray-700 transition-colors duration-200 ease-in-out hover:text-body"
-            href={siteSettings.author.websiteUrl}
-          >
-            {siteSettings.author.name}
-          </a>
-          &nbsp; (1486630-H).&nbsp; {t("text-all-rights-reserved")}
+          {displayed}
         </p>
 
         {payment && (

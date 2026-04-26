@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import FAQReturnsClient from "./faq-returns-client";
-import { faq_return_exchanges } from "@settings/faq.settings";
+import { loadFaqs } from "@lib/site-faq";
 import { buildFaqJsonLd } from "@lib/faq-jsonld";
 
 const description =
@@ -18,8 +18,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function FAQReturnsPage() {
-  const jsonLd = buildFaqJsonLd(faq_return_exchanges);
+export const revalidate = 60;
+
+export default async function FAQReturnsPage() {
+  const items = await loadFaqs("returns");
+  const jsonLd = buildFaqJsonLd(items);
   return (
     <>
       {jsonLd ? (
@@ -28,7 +31,7 @@ export default function FAQReturnsPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       ) : null}
-      <FAQReturnsClient />
+      <FAQReturnsClient items={items} />
     </>
   );
 }

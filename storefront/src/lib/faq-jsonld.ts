@@ -1,22 +1,18 @@
-// Build a FAQPage JSON-LD from a list of i18n key pairs (titleKey,
-// contentKey) + the corresponding translation map. Used by
-// /app/faq*/page.tsx to emit structured data without ever rendering the
-// faq client-side first.
+// Build FAQPage JSON-LD from a list of admin-edited FAQ items.
+// Used by /app/faq*/page.tsx server components after fetching the
+// items from the Medusa faq module (lib/site-faq.ts).
 //
 // Why server-side: Google's FAQ rich result requires the Q&A to be
-// present in the initial HTML payload. The Accordion component renders
-// the same strings client-side; we mirror them in JSON-LD here.
+// present in the initial HTML payload. The Accordion component
+// renders the same items client-side; we mirror them in JSON-LD here.
 
-import enFaq from "../../public/locales/en/faq.json";
 import { faqPage } from "./jsonld";
 
-type FaqEntry = { titleKey: string; contentKey: string };
-
-const messages: Record<string, string> = enFaq as Record<string, string>;
+type FaqInput = { question: string; answer: string };
 
 // Strip raw HTML so the answer string stays close to the visible plain
-// text. Google's FAQ guidelines accept HTML in the `text` field, but
-// crawlers prefer concise snippets.
+// text. Google accepts HTML in the `text` field, but crawlers prefer
+// concise snippets.
 function htmlToText(html: string): string {
   return html
     .replace(/<br\s*\/?>/gi, "\n")
@@ -27,15 +23,10 @@ function htmlToText(html: string): string {
     .trim();
 }
 
-export function buildFaqJsonLd(items: FaqEntry[]) {
-  const entries = items
-    .map((it) => {
-      const q = messages[it.titleKey];
-      const a = messages[it.contentKey];
-      if (!q || !a) return null;
-      return { question: q, answer: htmlToText(a) };
-    })
-    .filter(Boolean) as { question: string; answer: string }[];
+export function buildFaqJsonLd(items: FaqInput[]) {
+  const entries = (items ?? [])
+    .filter((it) => it?.question && it?.answer)
+    .map((it) => ({ question: it.question, answer: htmlToText(it.answer) }));
   if (!entries.length) return null;
   return faqPage(entries);
 }
